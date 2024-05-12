@@ -18,6 +18,9 @@ function Login() {
         draggable:true,
         theme:'dark'
     };
+    useEffect(()=>{
+      if(localStorage.getItem('chatapp-user')) navigate('/');
+    },[])
     const handleValidation=()=>{
         const {username,password}=values;
         if(password===""||username===""){
