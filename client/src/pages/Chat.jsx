@@ -5,31 +5,38 @@ import {useNavigate} from 'react-router-dom'
 import Contacts from '../components/Contacts';
 import Welcome from '../components/Welcome';
 import ChatContainer from '../components/ChatContainer';
+import {allUsersRoute} from '../utils/APIRoutes'
 function Chat() {
   const navigate=useNavigate();
   const [contacts,setContacts]=useState([]);
   const [currentUser,setCurrentUser]=useState(undefined);
   const [currentChat,setCurrentChat]=useState(undefined);
   const [isLoaded,setIsLoaded]=useState(false);
-  useEffect(async()=>{
-    if(!localStorage.getItem('chatapp-user')){
-      navigate('/login');
-    }
-    else{
-      setCurrentUser(await JSON.parse(localStorage.getItem('chatapp-user')));
-      setIsLoaded(true);
-    }
-  },[]);
-  useEffect(async()=>{
-    if(currentUser){
-      if(currentUser.isAvatarImageSet){
-        const data=await axios.get(`${allUsersRoute}/${currentUser._id}`);
-        setContacts(data.data);
+  useEffect(()=>{
+    const check=async()=>{
+      if(!localStorage.getItem('chatapp-user')){
+        navigate('/login');
       }
       else{
-        navigate('/setAvatar');
+        setCurrentUser(await JSON.parse(localStorage.getItem('chatapp-user')));
+        setIsLoaded(true);
       }
-    }
+    };
+    check();
+  },[]);
+  useEffect(()=>{
+    const check=async()=>{
+      if(currentUser){
+        if(currentUser.isAvatarImageSet){
+          const data=await axios.get(`${allUsersRoute}/${currentUser._id}`);
+          setContacts(data.data);
+        }
+        else{
+          navigate('/setAvatar');
+        }
+      }
+    };
+    check();
   },[currentUser]);
   const handleChatChange=(chat)=>{
     setCurrentChat(chat);
@@ -37,9 +44,8 @@ function Chat() {
   return (
     <Container>
       <div className="container">
-        <Contacts contacts={contacts} current_user={currentUser} changeChat={handleChatChange}/>
+        <Contacts contacts={contacts} currentUser={currentUser} changeChat={handleChatChange}/>
         {isLoaded&&currentChat===undefined?(<Welcome currentUser={currentUser}/>):(<ChatContainer currentChat={currentChat}/>)}
-        
       </div>
     </Container>
   )
