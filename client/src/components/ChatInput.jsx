@@ -9,10 +9,10 @@ function ChatInput({handleSendMessage}) {
     const handleEmojiPicker=()=>{
         setShowEmojiPicker(!showEmojiPicker);
     };
-    const handleEmojiClick=(e,emoji)=>{
-        let message=message;
-        message+=emoji.emoji;
-        setMessage(message);
+    const handleEmojiClick=(e)=>{
+        let msg1=message;
+        msg1+=e.emoji;
+        setMessage(msg1);
     };
     const sendChat=(e)=>{
         e.preventDefault();
@@ -26,15 +26,13 @@ function ChatInput({handleSendMessage}) {
         <div className="button-container">
             <div className="emoji">
                 <BsEmojiSmileFill onClick={handleEmojiPicker}/>
-                {
-                    showEmojiPicker&&<Picker onCLick={handleEmojiClick}/>
-                }
+                {showEmojiPicker&&<Picker onEmojiClick={handleEmojiClick}/>}
             </div>
         </div>
         <form className="input-container" onSubmit={(e)=>sendChat(e)}>
             <input type="text" placeholder="Type your message here." value={message} onChange={(e)=>{setMessage(e.target.value);}}/>
             <button className="submit">
-                {IoMdSend}
+                <IoMdSend/>
             </button>
         </form>
     </Container>
