@@ -1,11 +1,22 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
 import styled from 'styled-components'
 import Logout from './Logout'
-import Messages from './Messages'
 import ChatInput from './ChatInput'
-function ChatContainer({currentChat}) {
+import axios from 'axios'
+import {sendMessageRoute,getAllMessagesRoute} from '../utils/APIRoutes'
+function ChatContainer({currentChat,currentUser}) {
+  const [messages,setMessages]=useState([]);
+  useEffect(()=>{
+    const check=async()=>{
+      if(currentUser&&currentChat){
+        const response=await axios.post(getAllMessagesRoute,{from:currentUser._id,to:currentChat._id});
+        setMessages(response.data);
+      }
+    }
+    check();
+  },[currentChat]);
   const handleSendMessage=async(message)=>{
-    alert(message);
+    await axios.post(sendMessageRoute,{from:currentUser._id,to:currentChat._id,message:{text:message}})
   };
   return (
     <>
@@ -23,7 +34,17 @@ function ChatContainer({currentChat}) {
             </div>
             <Logout/>
         </div>
-        <Messages/>
+        <div className="chat-messages">
+          {messages.map((message,index)=>{
+            return(<div key={`${index}`}>
+              <div className={`message ${message.fromSelf?'sent':'received'}`}>
+                <div className="content">
+                  <p>{message.message}</p>
+                </div>
+              </div>
+            </div>)
+          })}
+        </div>
         <ChatInput handleSendMessage={handleSendMessage}/>
     </Container>
         )
@@ -89,13 +110,13 @@ overflow: hidden;
       }
     }
   }
-  .sended {
+  .sent {
     justify-content: flex-end;
     .content {
       background-color: #4f04ff21;
     }
   }
-  .recieved {
+  .received {
     justify-content: flex-start;
     .content {
       background-color: #9900ff20;
