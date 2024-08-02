@@ -6,7 +6,7 @@ module.exports.addMessage=async(req,res,next)=>{
         if(data) return res.json({message:"Message added successfully to the database"});
         return res.json({message:"Failed to add message to the database"});
     }catch(e){
-        next
+        next(e);
     }
 };
 module.exports.getAllMessages=async(req,res,next)=>{
